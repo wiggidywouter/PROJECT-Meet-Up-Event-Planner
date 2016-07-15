@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    
+    <meta charset=utf-8>
+
+    <meta name=viewport content="width=device-width, initial-scale=1">
+
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <title>Meet Up Event Planner</title>
+    
+    <link rel="stylesheet" href="./css/fonts.css">
+
+    <link rel="stylesheet" href="./css/material-icons.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <link rel="stylesheet" href="./css/rome.css"/>
+
+    <link rel="stylesheet" href="combined.css">
+
+  </head>
+  
+  <body>
+    
+    <!-- spinner -->
+    <div class="spinner"></div>
+
+    <!-- app -->
+    <div id="app" class="app" tabindex="0"
+
+        v-on:keyup.left="this.$children[0].events ? this.$children[0].prev(): ''"
+        v-on:keyup.right="this.$children[0].events ? this.$children[0].next(): ''"
+        v-touch:swipeleft="this.$children[0].events ? this.$children[0].prev(): ''"
+        v-touch:swiperight="this.$children[0].events ? this.$children[0].next(): ''">
+      
+      <!-- header -->
+      <div class="header">
+      
+        <h1 class="header-title"
+            v-link="{ path:'/' }">
+          
+          Meet Up Event Planner
+
+        </h1>
+      
+      </div>
+      <!-- /header -->
+
+      <router-view  v-ref:active-page transition="fade" transition-mode="out-in"></router-view>
+
+    </div>
+    <!-- /app -->
+
+    <!-- /account-section template -->
+<script type="text/template"  id="account-section">
+  
+  <!-- account -->
+  <div class="account">
+
+      <div class="account-user" v-show="isLoggedIn">
+      
+        {{ activeUser }}
+      
+      </div>
+
+      <div class="account-signin account-signin--singleline"
+          v-show="!isLoggedIn">
+
+        <a href="#" class="account-signin-link"
+          v-on:click.prevent="isLoggedIn = true">
+
+          Sign in
+
+        </a>
+      
+      </div> <!-- /account-signin -->
+
+      <div class="account-signout account-signout--singleline"
+          v-show="isLoggedIn">
+      
+        <a href="#" class="account-signout-link"
+          v-on:click.prevent="isLoggedIn = false">
+
+          Sign out
+
+        </a>
+      
+      </div> <!-- /account-signout -->
+
+      <div class="account-register account-register--singleline" v-show="!isLoggedIn &&!isRegistering">
+
+        <i> or </i>
+        
+        <a href="#" class="account-register-link"
+            v-link="{ path: '/create-account' }"> create an account</a>.
+
+      </div> <!-- /account-register -->
+  
+  </div> <!-- /account -->
+
+</script>
+<!-- /account-section template -->
+    
+    <!-- event-display template -->
+<script type="text/template"  id="event-display">
+  
+  <div class="event">
+
+    <div class="event-prop">
+
+      <div class="event-prop-label">
+        Location
+      </div>
+
+      <div class="event-prop-value">
+        {{ currentEvent['location'] }}
+      </div>
+
+    </div> <!-- /event-prop -->
+
+    <div class="event-prop">
+
+      <div class="event-prop-label">
+        Start date
+      </div>
+
+      <div class="event-prop-value">
+        {{ currentEvent['start-date'] }}
+      </div>
+
+    </div> <!-- /event-prop -->
+
+    <div class="event-prop">
+
+      <div class="event-prop-label">
+        End date
+      </div>
+
+      <div class="event-prop-value">
+        {{ currentEvent['end-date'] }}
+      </div>
+
+    </div> <!-- /event-prop -->
+
+    <div class="event-prop">
+
+      <div class="event-prop-label">
+        Event type
+      </div>
+
+      <div class="event-prop-value">
+        {{ currentEvent['event-type'] }}
+      </div>
+
+    </div> <!-- /event-prop -->
+
+    <div class="event-prop">
+
+      <div class="event-prop-label">
+        Hosted by
+      </div>
+
+      <div class="event-prop-value">
+        {{ currentEvent['event-host'] }}
+      </div>
+
+    </div> <!-- /event-prop -->
+
+  </div> <!-- /event -->
+
+</script>
+<!-- /event-display template -->
+
+    <!-- create-event-form template -->
+<script type="text/template"  id="create-event-form">
+
+  <div>
+
+    <form action="#" class="form"
+    v-on:submit.prevent="continue"
+    v-on:keypress.enter.prevent="handleTabIndex($event)"
+    v-el:form>
+
+      <!-- create-your-event-section -->
+      <div class="create-your-event-section"
+          v-show="activeStep === 'Create your event'">
+
+        <div class="input event-name">
+
+          <label for="event-name" class="input_label">
+            <span class="input_label_content">Event name</span>
+          </label>
+
+          <input type="text" name="event-name" class="input_field"
+              autocomplete="off" minlength="12" autofocus required 
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['event-name']"
+              v-bind:disabled="activeStep !== 'Create your event'"/>
+        
+        </div> <!-- /input event-name -->
+
+        <div class="input event-type">
+
+          <label for="event-type" class="input_label">
+            <span class="input_label_content">Event type</span>
+          </label>
+          
+          <input type="text" name="event-type" class="input_field"
+              list="event-types" autofill="off" minlength="4" required 
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-on:input="updateValidityState($event)"
+              v-bind:value="formData['event-type']"
+              v-bind:disabled="activeStep !== 'Create your event'"/>
+
+          <datalist id="event-types">
+            <option value="Adult Birthday Party">Adult Birthday Party</option>
+            <option value="Anniversary">Anniversary</option>
+            <option value="Baby Shower">Baby Shower</option>
+            <option value="Bachelor Party">Bachelor Party</option>
+            <option value="Banquet">Banquet</option>
+            <option value="Bar/Bat Mitzvah">Bar/Bat Mitzvah</option>
+            <option value="Book Release">Book Release</option>
+            <option value="Bridal Shower">Bridal Shower</option>
+            <option value="Child Birthday Party">Child Birthday Party</option>
+            <option value="Conference">Conference</option>
+            <option value="Corporate Event">Corporate Event</option>
+            <option value="Film">Film</option>
+            <option value="Graduation Party">Graduation Party</option>
+            <option value="Holiday Party">Holiday Party</option>
+            <option value="Luncheon">Luncheon</option>
+            <option value="Meeting">Meeting</option>
+            <option value="Music festival">Music festival</option>
+            <option value="Pool Party">Pool Party</option>
+            <option value="Prom">Prom</option>
+            <option value="Quinceañera">Quinceañera</option>
+            <option value="Retreat">Retreat</option>
+            <option value="Reunion">Reunion</option>
+            <option value="Seminar">Seminar</option>
+            <option value="Sporting">Sporting</option>
+            <option value="Teen Birthday Party">Teen Birthday Party</option>
+            <option value="Wedding">Wedding</option>
+            <option value="Wedding Reception">Wedding Reception</option>
+            <option value="Workshop">Workshop</option>
+          </datalist>
+
+        </div> <!-- /input event-type -->
+
+        <div class="input event-host">
+          
+          <label for="event-host" class="input_label">
+            <span class="input_label_content">Event host</span>
+          </label>
+          
+          <input type="text" name="event-host" class="input_field"
+              autocomplete="off" required 
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['event-host']"
+              v-bind:disabled="activeStep !== 'Create your event'"/>
+
+        </div> <!-- /input event-host -->
+
+      </div>
+      <!-- /create-your-event-section -->
+      
+      <!-- set-the-details-section -->
+      <div class="set-the-details-section"
+          v-show="activeStep === 'Set the details'">
+        
+        <div class="input location">
+          
+          <label for="location" class="input_label">
+            <span class="input_label_content">Location</span>
+          </label>
+          
+          <input type="text" name="location" class="input_field"
+              autocomplete="off" required 
+              v-el:location
+              v-on:focus="setInFocus($event) & openCloseDatePickers($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['location']"
+              v-bind:disabled="activeStep !== 'Set the details'"/>
+        
+        </div> <!-- /input location -->
+
+        <div class="input start-date">
+
+          <label for="start-date" class="input_label">
+            <span class="input_label_content">Start date / time</span>
+          </label>
+          
+          <input type="text" name="start-date" class="input_field"
+              autocomplete="off" required
+              pattern="(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/20[0-9]{2}\s\(([0-1][0-9]|2[0-3]):([0-5][0-9])\)"
+              v-el:start-date
+              v-on:focus="setInFocus($event) & openCloseDatePickers($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['start-date']"
+              v-bind:placeholder="(inFocus === 'start-date') ? startDatePicker.getDateString() : ''"
+              v-bind:disabled="activeStep !== 'Set the details'"/>
+
+        </div> <!-- /input start-date -->
+
+        <div class="startDatePickerHolder"
+            v-el:start-date-picker-holder
+            v-bind:style="{ display:
+              (activeStep === 'Set the details') ? 'block' : 'none'}">
+        </div> 
+
+        <div class="input end-date">
+
+          <label for="end-date" class="input_label">
+            <span class="input_label_content">End date / time</span>
+          </label>
+          
+          <input type="text" name="end-date" class="input_field"
+              autocomplete="off" required 
+              pattern="(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/20[0-9]{2}\s\(([0-1][0-9]|2[0-3]):([0-5][0-9])\)"
+              v-el:end-date
+              v-on:focus="setInFocus($event) & openCloseDatePickers($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['end-date']"
+              v-bind:placeholder="(inFocus === 'end-date') ? endDatePicker.getDateString() : ''"
+              v-bind:disabled="activeStep !== 'Set the details'"/>
+
+        </div> <!-- /input end-date -->
+
+        <div class="endDatePickerHolder"
+            v-el:end-date-picker-holder
+            v-bind:style="{ display:
+              (activeStep === 'Set the details') ? 'block' : 'none'}">
+        </div>
+
+      </div>
+      <!-- /set-the-details-section -->
+
+      <!-- invite-your-friends-section -->
+      <div class="invite-your-friends-section"
+          v-show="activeStep === 'Invite your friends'">
+
+        <div class="input invite-email">
+
+          <label for="invite-email" class="input_label">
+            <span class="input_label_content">Email</span>
+          </label>
+          
+          <input type="email" name="invite-email" class="input_field"
+              autocomplete="off"
+              multiple
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['invite-email']"
+              v-bind:disabled="activeStep !== 'Invite your friends'"/>
+
+        </div> <!-- /input invite-email -->
+
+      </div>
+      <!-- /invite-your-friends-section -->
+
+      <button type="submit" class="button" v-el:submit>
+        
+        <span class="button-label-top">
+          {{ (nextStep === 'Submit your event') ? "final step" : "continue to" | uppercase }}
+        </span>
+        
+        <span class="button-label-next">
+          {{ nextStep }}
+        </span>
+        
+        <i class="mi mi-arrow-forward button-icon"></i>
+      
+      </button>
+
+    </form>
+    <!-- info -->
+    <div v-el:info class="info">
+
+      <ul v-show="inFocus === 'event-name'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['event-name'].tooShort && !validityState['event-name'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Name your event. Be descriptive, i.e. 12 or more characters.
+          
+          </span>
+        
+        </li>
+
+      </ul>
+
+      <ul v-show="inFocus === 'event-type'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['event-type'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Select the category that best reflects your event, or add a new one.
+          
+          </span>
+        
+        </li>
+
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['event-type'].tooShort && !validityState['event-type'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Event type is 4 or more characters long.
+
+          </span>
+        
+        </li>
+
+      </ul>
+
+      <ul v-show="inFocus === 'event-host'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['event-host'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Add an event host (could be an individual’s name or an organization).
+          </span>
+        
+        </li>
+
+      </ul>
+
+      <ul v-show="inFocus === 'location'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['location'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Start typing and select a location.
+
+          </span>
+        
+        </li>
+
+      </ul>
+
+      <ul v-show="inFocus === 'start-date'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['start-date'].valueMissing && !validityState['start-date'].patternMismatch}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            When does it start? Use the calander to set a start date & time.
+
+          </span>
+        
+        </li>
+
+      </ul>
+
+      <ul v-show="inFocus === 'invite-email'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['invite-email'].valueMissing && validityState['invite-email'].valid}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Invite your friends! Multiple email addresses must be comma separated. (optional)
+
+          </span>
+        
+        </li>
+
+      </ul>
+
+      <ul v-show="inFocus === 'end-date'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['end-date'].valueMissing && !validityState['end-date'].patternMismatch}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            When does it end? Use the calander to set an end date & time.
+
+          </span>
+        
+        </li>
+
+      </ul>
+
+  <!--     <div class="startDatePickerHolder"
+          v-el:start-date-picker-holder
+          v-bind:style="{ display:
+            (inFocus === 'start-date' || !inFocus && activeStep === 'Set the details') ? 'block' : 'none'}">
+      </div> -->
+
+  <!--     <div class="endDatePickerHolder"
+          v-el:end-date-picker-holder
+          v-bind:style="{ display:
+            (inFocus === 'end-date' || !inFocus && activeStep === 'Set the details') ? 'block' : 'none'}">
+      </div> -->
+      <!--  -->
+
+    </div>
+    <!-- /info -->
+
+  </div>
+
+</script>
+<!-- /create-event-form template -->
+
+ 
+    <!-- create-account-form template -->
+<script type="text/template"  id="create-account-form">
+
+  <div>
+
+    <form action="#" class="form"
+    v-on:submit.prevent="continue"
+    v-on:keypress.enter.prevent="handleTabIndex($event)"
+    v-el:form>
+
+      <!-- create-your-account-section -->
+      <div class="create-your-account-section"
+          v-show="activeStep === 'Create your account'">
+
+        <div class="input username">
+
+          <label for="username" class="input_label">
+            <span class="input_label_content">Username</span>
+          </label>
+
+          <input type="text" name="username" class="input_field"
+              autocomplete="on" minlength="6" autofocus required 
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="validateUsername($event)"
+              v-bind:value="formData['username']"
+              v-bind:disabled="activeStep !== 'Create your account'"/>
+        
+        </div> <!-- /input username -->
+
+        <div class="input email">
+
+          <label for="email" class="input_label">
+            <span class="input_label_content">Email</span>
+          </label>
+
+          <input type="email" name="email" class="input_field"
+              autocomplete="on" required 
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['email']"
+              v-bind:disabled="activeStep !== 'Create your account'"/>
+        
+        </div> <!-- /input email -->
+
+
+      </div>
+      <!-- /create-your-account-section -->
+
+      <!-- choose-a-password-section -->
+      <div class="choose-a-password-section"
+          v-show="activeStep === 'Choose a password'">
+
+        <div class="input password">
+
+          <label for="password" class="input_label">
+            <span class="input_label_content">Password</span>
+          </label>
+
+          <input type="password" name="password" class="input_field"
+              autocomplete="off" minlength="6" required 
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="validatePassword($event)"
+              v-bind:value="formData['password']"
+              v-bind:disabled="activeStep !== 'Choose a password'"/>
+        
+        </div> <!-- /input password -->
+
+        <div class="input password-retype">
+
+          <label for="password-retype" class="input_label">
+            <span class="input_label_content">Retype your password</span>
+          </label>
+
+          <input type="password" name="password-retype" class="input_field"
+              autocomplete="off" required 
+              v-on:focus="setInFocus($event) & validatePasswordRetype($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="validatePasswordRetype($event)"
+              v-bind:value="formData['password-retype']"
+              v-bind:disabled="activeStep !== 'Choose a password'"/>
+        
+        </div> <!-- /input password-retype -->
+
+      </div>
+      <!-- /choose-a-password-section -->
+
+      <!-- complete-your-profile-section -->
+      <div class="complete-your-profile-section"
+          v-show="activeStep === 'Complete your profile'">
+
+        <div class="input location">
+
+          <label for="location" class="input_label">
+            <span class="input_label_content">Location</span>
+          </label>
+
+          <input type="text" name="location" class="input_field"
+              autocomplete="off"
+              v-el:location
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['location']"
+              v-bind:disabled="activeStep !== 'Complete your profile'"/>
+        
+        </div> <!-- /input location -->
+
+        <div class="input company">
+
+          <label for="company" class="input_label">
+            <span class="input_label_content">Company</span>
+          </label>
+
+          <input type="text" name="company" class="input_field"
+              autocomplete="on"
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['company']"
+              v-bind:disabled="activeStep !== 'Complete your profile'"/>
+        
+        </div> <!-- /input company -->
+
+        <div class="input job-title">
+
+          <label for="job-title" class="input_label">
+            <span class="input_label_content">Job title</span>
+          </label>
+
+          <input type="text" name="job-title" class="input_field"
+              autocomplete="on"
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['job-title']"
+              v-bind:disabled="activeStep !== 'Complete your profile'"/>
+        
+        </div> <!-- /input job-title -->
+
+      </div>
+      <!-- /complete-your-profile-section -->
+
+      <button type="submit" class="button" v-el:submit>
+        
+        <span class="button-label-top">
+          {{ (nextStep === 'Finish and sign in') ? "final step" : "continue to" | uppercase }}
+        </span>
+        
+        <span class="button-label-next">
+          {{ nextStep }}
+        </span>
+        
+        <i class="mi mi-arrow-forward button-icon"></i>
+      
+      </button>
+
+    </form>
+
+    <!-- info -->
+    <div v-el:info class="info">
+
+      <ul v-show="inFocus === 'username'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['username'].tooShort && !validityState['username'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Username is 6 or more characters long.
+          
+          </span>
+        
+        </li>
+        
+        <li v-bind:class="{'checklist-item--succes':validityState['username'].usernameIsUnique && !validityState['username'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Username is unique.
+          
+          </span>
+        
+        </li>
+
+      </ul> <!-- /checklist username -->
+
+      <ul v-show="inFocus === 'email'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':validityState['email'].valid && !validityState['email'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Enter a valid email address.
+          
+          </span>
+        
+        </li>
+
+      </ul> <!-- /checklist email -->
+
+      <ul v-show="inFocus === 'password'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':validityState['password'].hasNumber && !validityState['password'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Password contains a number.
+          
+          </span>
+        
+        </li>
+        
+        <li v-bind:class="{'checklist-item--succes':validityState['password'].hasCapitalLetter && !validityState['password'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            ... a capital letter.
+          
+          </span>
+        
+        </li>
+        
+        <li v-bind:class="{'checklist-item--succes':validityState['password'].hasSpecialCharacter && !validityState['password'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            ... a special character.
+          
+          </span>
+        
+        </li>
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['password'].tooShort && !validityState['password'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Password is 6 or more characters long.
+          
+          </span>
+        
+        </li>
+        
+      </ul> <!-- /checklist password -->
+
+      <ul v-show="inFocus === 'password-retype'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes': validityState['password-retype'].passwordsMatch && !validityState['password-retype'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Passwords match.
+          
+          </span>
+        
+        </li>
+      </ul>  <!-- /checklist password-retype -->
+
+      <ul v-show="inFocus === 'location'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['location'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Start typing and select a location. (optional)
+
+          </span>
+        
+        </li>
+
+      </ul> <!-- /checklist location -->
+
+      <ul v-show="inFocus === 'company'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['company'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Enter your company name. (optional)
+
+          </span>
+        
+        </li>
+
+      </ul> <!-- /checklist company -->
+
+      <ul v-show="inFocus === 'job-title'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['job-title'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Enter your job title. (optional)
+
+          </span>
+        
+        </li>
+
+      </ul> <!-- /checklist job-title -->
+      
+    </div>
+    <!-- /info -->
+
+  </div>
+
+</script>
+<!-- /create-account-form template -->
+
+
+    <!-- steps-menu template -->
+<script type="text/template"  id="steps-menu">
+  
+  <ul class="steps-menu">
+
+    <li class="steps-menu-item"
+        v-for="step in steps"
+        v-bind:class="{'steps-menu-item--active-step': activeStep === step, 'steps-menu-item--locked': isLocked(step)}"
+        v-on:click="navigate(step)">
+
+      {{ step }}
+
+    </li>
+  
+  </ul>
+
+</script>
+<!-- /steps-menu template -->
+    
+    <!-- multi-step-form template -->
+<script type="text/template"  id="multi-step-form">
+
+  <component
+      v-ref:active-form
+      v-bind:is='activeForm'
+      v-bind:active-step.sync='activeStep'>
+    
+  </component>
+
+</script>
+<!-- /multi-step-form template -->
+
+
+    <!-- page-template -->
+<script type="text/template" id="page-template">
+
+  <!-- left -->
+  <div class="left">
+
+    <div class="left-header">
+
+      <slot name="left-header"></slot>
+
+    </div>
+
+    <div class="left-content">
+      
+      <slot name="left-content"></slot>
+
+    </div>
+
+  </div>
+  <!-- /left -->
+  
+  <!-- panel -->
+  <div class="panel">
+    
+    <div class="panel-header">
+        
+      <slot name="panel-header"></slot>
+
+    </div>
+    
+    <div class="panel-content">
+
+      <slot name="panel-content"></slot>
+    
+    </div>
+  
+  </div>
+  <!-- /panel -->        
+
+</script>
+<!-- /page-template -->
+    
+    <!-- home-page-template -->
+<script type="text/template" id="home-page-template">
+
+  <div class="page">
+    
+    <page>
+      
+      <template slot="left-header">
+
+        <account-section
+            v-bind:active-user="$root.$data['activeUser']"
+            v-bind:is-logged-in.sync="$root.$data['isLoggedIn']">
+
+        </account-section>
+
+      </template>
+      
+      <template slot="left-content">
+      
+        <a href="#" class="new-event-link"
+            v-link="{ path: '/create-event' }">
+      
+          Create an event
+      
+        </a>
+      
+      </template>
+      
+      <template slot="panel-header">
+
+        <div class="panel-header-title">
+          
+          {{ currentEvent['event-name'] }}
+        
+        </div>
+
+        <div class="panel-header-new">
+          
+          New
+
+        </div>
+      
+      </template>
+      
+      <template slot="panel-content">
+      
+        <event-display v-bind:current-event='currentEvent'></event-display>
+
+        <div class="next" v-on:click='next()'>
+
+          <a href="#" class="next-link"
+              v-on:click.prevent
+              v-touch:tap="tapHandler($event)">
+            <i class="mi mi-chevron-right"></i>
+          </a>
+
+        </div>
+
+        <div class="prev" v-on:click='prev()'>
+
+          <a href="#" class="prev-link"
+              v-on:click.prevent
+              v-touch:tap="tapHandler($event)">
+            <i class="mi mi-chevron-left"></i>
+          </a>
+
+        </div>
+      
+      </template>
+    
+    </page>
+
+  </div> <!-- /.page -->
+
+</script>
+<!-- /home-page-template -->
+
+
+    <!-- create-event-page-template -->
+<script type="text/template" id="create-event-page-template">
+
+  <div class="page">
+
+    <page>
+      
+      <template slot="left-header">
+
+        <account-section
+            v-bind:active-user="$root.$data['activeUser']"
+            v-bind:is-logged-in.sync="$root.$data['isLoggedIn']">
+
+        </account-section>
+
+      </template>
+      
+      <template slot="left-content">
+
+        <steps-menu
+            v-bind:progress='progress'
+            v-bind:active-step.sync='activeStep'>
+        </steps-menu>
+      
+      </template>
+      
+      <template slot="panel-header">
+
+        <div class="panel-header-title">
+          
+          {{ activeStep }}
+        
+        </div>
+
+      </template>
+      
+      <template slot="panel-content">
+
+        <multi-step-form
+            v-ref:multi-step-form
+            v-bind:active-step.sync='activeStep'
+            active-form='create-event'>
+        </multi-step-form>
+
+      </template>
+    
+    </page>
+
+  </div> <!-- /.page -->
+
+</script>
+<!-- /create-event-page-template -->
+    
+    <!-- create-account-page-template -->
+<script type="text/template" id="create-account-page-template">
+  
+  <div class="page">
+    
+    <page>
+      
+      <template slot="left-header">
+
+        <account-section
+            v-bind:active-user="$root.$data['activeUser']"
+            v-bind:is-logged-in.sync="$root.$data['isLoggedIn']">
+
+        </account-section>
+
+      </template>
+      
+      <template slot="left-content">
+
+        <steps-menu
+            v-bind:progress='progress'
+            v-bind:active-step.sync='activeStep'>
+        </steps-menu>
+      
+      </template>
+      
+      <template slot="panel-header">
+
+        <div class="panel-header-title">
+          
+          {{ activeStep }}
+        
+        </div>
+
+      </template>
+      
+      <template slot="panel-content">
+
+        <multi-step-form
+            v-ref:multi-step-form
+            v-bind:active-step.sync='activeStep'
+            active-form='create-account'>
+        </multi-step-form>
+
+      </template>
+    
+    </page>
+
+  </div> <!-- /.page -->
+
+</script>
+<!-- /create-account-page-template -->
+
+    <!-- libs -->
+
+    <script src="./js/libs/vue.js"></script>
+    
+    <script src="./js/libs/vue-router.js"></script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places" async="async" defer="defer"></script>
+    
+    <script src="./js/libs/rome.js"></script>
+
+    <script src="./js/libs/hammer.js"></script>
+    
+    <script src="./js/libs/vue-touch.js"></script>
+
+    <!-- helpers, mixins -->
+
+    <script src="combined.js"></script>
+  
+  </body>
+
+</html>
