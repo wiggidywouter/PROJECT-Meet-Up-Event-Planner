@@ -1,0 +1,69 @@
+<!-- event-display template -->
+<script type="text/template"  id="event-display">
+  
+  <div class="event">
+
+    <div class="event-prop">
+
+      <div class="event-prop-label">
+        Location
+      </div>
+
+      <div class="event-prop-value">
+        {{ currentEvent['location'] }}
+      </div>
+
+    </div> <!-- /event-prop -->
+
+    <div class="event-prop">
+
+      <div class="event-prop-label">
+        Start date
+      </div>
+
+      <div class="event-prop-value">
+        {{ currentEvent['start-date'] }}
+      </div>
+
+    </div> <!-- /event-prop -->
+
+    <div class="event-prop">
+
+      <div class="event-prop-label">
+        End date
+      </div>
+
+      <div class="event-prop-value">
+        {{ currentEvent['end-date'] }}
+      </div>
+
+    </div> <!-- /event-prop -->
+
+    <div class="event-prop">
+
+      <div class="event-prop-label">
+        Event type
+      </div>
+
+      <div class="event-prop-value">
+        {{ currentEvent['event-type'] }}
+      </div>
+
+    </div> <!-- /event-prop -->
+
+    <div class="event-prop">
+
+      <div class="event-prop-label">
+        Hosted by
+      </div>
+
+      <div class="event-prop-value">
+        {{ currentEvent['event-host'] }}
+      </div>
+
+    </div> <!-- /event-prop -->
+
+  </div> <!-- /event -->
+
+</script>
+<!-- /event-display template -->

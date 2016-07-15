@@ -1,0 +1,41 @@
+<!-- page-template -->
+<script type="text/template" id="page-template">
+
+  <!-- left -->
+  <div class="left">
+
+    <div class="left-header">
+
+      <slot name="left-header"></slot>
+
+    </div>
+
+    <div class="left-content">
+      
+      <slot name="left-content"></slot>
+
+    </div>
+
+  </div>
+  <!-- /left -->
+  
+  <!-- panel -->
+  <div class="panel">
+    
+    <div class="panel-header">
+        
+      <slot name="panel-header"></slot>
+
+    </div>
+    
+    <div class="panel-content">
+
+      <slot name="panel-content"></slot>
+    
+    </div>
+  
+  </div>
+  <!-- /panel -->        
+
+</script>
+<!-- /page-template -->

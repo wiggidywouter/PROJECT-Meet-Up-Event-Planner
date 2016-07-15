@@ -1,0 +1,49 @@
+<!-- /account-section template -->
+<script type="text/template"  id="account-section">
+  
+  <!-- account -->
+  <div class="account">
+
+      <div class="account-user" v-show="isLoggedIn">
+      
+        {{ activeUser }}
+      
+      </div>
+
+      <div class="account-signin account-signin--singleline"
+          v-show="!isLoggedIn">
+
+        <a href="#" class="account-signin-link"
+          v-on:click.prevent="isLoggedIn = true">
+
+          Sign in
+
+        </a>
+      
+      </div> <!-- /account-signin -->
+
+      <div class="account-signout account-signout--singleline"
+          v-show="isLoggedIn">
+      
+        <a href="#" class="account-signout-link"
+          v-on:click.prevent="isLoggedIn = false">
+
+          Sign out
+
+        </a>
+      
+      </div> <!-- /account-signout -->
+
+      <div class="account-register account-register--singleline" v-show="!isLoggedIn &&!isRegistering">
+
+        <i> or </i>
+        
+        <a href="#" class="account-register-link"
+            v-link="{ path: '/create-account' }"> create an account</a>.
+
+      </div> <!-- /account-register -->
+  
+  </div> <!-- /account -->
+
+</script>
+<!-- /account-section template -->

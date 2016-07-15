@@ -1,0 +1,52 @@
+<!-- create-event-page-template -->
+<script type="text/template" id="create-event-page-template">
+
+  <div class="page">
+
+    <page>
+      
+      <template slot="left-header">
+
+        <account-section
+            v-bind:active-user="$root.$data['activeUser']"
+            v-bind:is-logged-in.sync="$root.$data['isLoggedIn']">
+
+        </account-section>
+
+      </template>
+      
+      <template slot="left-content">
+
+        <steps-menu
+            v-bind:progress='progress'
+            v-bind:active-step.sync='activeStep'>
+        </steps-menu>
+      
+      </template>
+      
+      <template slot="panel-header">
+
+        <div class="panel-header-title">
+          
+          {{ activeStep }}
+        
+        </div>
+
+      </template>
+      
+      <template slot="panel-content">
+
+        <multi-step-form
+            v-ref:multi-step-form
+            v-bind:active-step.sync='activeStep'
+            active-form='create-event'>
+        </multi-step-form>
+
+      </template>
+    
+    </page>
+
+  </div> <!-- /.page -->
+
+</script>
+<!-- /create-event-page-template -->

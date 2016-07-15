@@ -1,0 +1,18 @@
+<!-- steps-menu template -->
+<script type="text/template"  id="steps-menu">
+  
+  <ul class="steps-menu">
+
+    <li class="steps-menu-item"
+        v-for="step in steps"
+        v-bind:class="{'steps-menu-item--active-step': activeStep === step, 'steps-menu-item--locked': isLocked(step)}"
+        v-on:click="navigate(step)">
+
+      {{ step }}
+
+    </li>
+  
+  </ul>
+
+</script>
+<!-- /steps-menu template -->

@@ -1,0 +1,330 @@
+<!-- create-account-form template -->
+<script type="text/template"  id="create-account-form">
+
+  <div>
+
+    <form action="#" class="form"
+    v-on:submit.prevent="continue"
+    v-on:keypress.enter.prevent="handleTabIndex($event)"
+    v-el:form>
+
+      <!-- create-your-account-section -->
+      <div class="create-your-account-section"
+          v-show="activeStep === 'Create your account'">
+
+        <div class="input username">
+
+          <label for="username" class="input_label">
+            <span class="input_label_content">Username</span>
+          </label>
+
+          <input type="text" name="username" class="input_field"
+              autocomplete="on" minlength="6" autofocus required 
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="validateUsername($event)"
+              v-bind:value="formData['username']"
+              v-bind:disabled="activeStep !== 'Create your account'"/>
+        
+        </div> <!-- /input username -->
+
+        <div class="input email">
+
+          <label for="email" class="input_label">
+            <span class="input_label_content">Email</span>
+          </label>
+
+          <input type="email" name="email" class="input_field"
+              autocomplete="on" required 
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['email']"
+              v-bind:disabled="activeStep !== 'Create your account'"/>
+        
+        </div> <!-- /input email -->
+
+
+      </div>
+      <!-- /create-your-account-section -->
+
+      <!-- choose-a-password-section -->
+      <div class="choose-a-password-section"
+          v-show="activeStep === 'Choose a password'">
+
+        <div class="input password">
+
+          <label for="password" class="input_label">
+            <span class="input_label_content">Password</span>
+          </label>
+
+          <input type="password" name="password" class="input_field"
+              autocomplete="off" minlength="6" required 
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="validatePassword($event)"
+              v-bind:value="formData['password']"
+              v-bind:disabled="activeStep !== 'Choose a password'"/>
+        
+        </div> <!-- /input password -->
+
+        <div class="input password-retype">
+
+          <label for="password-retype" class="input_label">
+            <span class="input_label_content">Retype your password</span>
+          </label>
+
+          <input type="password" name="password-retype" class="input_field"
+              autocomplete="off" required 
+              v-on:focus="setInFocus($event) & validatePasswordRetype($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="validatePasswordRetype($event)"
+              v-bind:value="formData['password-retype']"
+              v-bind:disabled="activeStep !== 'Choose a password'"/>
+        
+        </div> <!-- /input password-retype -->
+
+      </div>
+      <!-- /choose-a-password-section -->
+
+      <!-- complete-your-profile-section -->
+      <div class="complete-your-profile-section"
+          v-show="activeStep === 'Complete your profile'">
+
+        <div class="input location">
+
+          <label for="location" class="input_label">
+            <span class="input_label_content">Location</span>
+          </label>
+
+          <input type="text" name="location" class="input_field"
+              autocomplete="off"
+              v-el:location
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['location']"
+              v-bind:disabled="activeStep !== 'Complete your profile'"/>
+        
+        </div> <!-- /input location -->
+
+        <div class="input company">
+
+          <label for="company" class="input_label">
+            <span class="input_label_content">Company</span>
+          </label>
+
+          <input type="text" name="company" class="input_field"
+              autocomplete="on"
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['company']"
+              v-bind:disabled="activeStep !== 'Complete your profile'"/>
+        
+        </div> <!-- /input company -->
+
+        <div class="input job-title">
+
+          <label for="job-title" class="input_label">
+            <span class="input_label_content">Job title</span>
+          </label>
+
+          <input type="text" name="job-title" class="input_field"
+              autocomplete="on"
+              v-on:focus="setInFocus($event)"
+              v-on:blur="inFocus = ''"
+              v-on:keyup="updateValidityState($event)"
+              v-bind:value="formData['job-title']"
+              v-bind:disabled="activeStep !== 'Complete your profile'"/>
+        
+        </div> <!-- /input job-title -->
+
+      </div>
+      <!-- /complete-your-profile-section -->
+
+      <button type="submit" class="button" v-el:submit>
+        
+        <span class="button-label-top">
+          {{ (nextStep === 'Finish and sign in') ? "final step" : "continue to" | uppercase }}
+        </span>
+        
+        <span class="button-label-next">
+          {{ nextStep }}
+        </span>
+        
+        <i class="mi mi-arrow-forward button-icon"></i>
+      
+      </button>
+
+    </form>
+
+    <!-- info -->
+    <div v-el:info class="info">
+
+      <ul v-show="inFocus === 'username'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['username'].tooShort && !validityState['username'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Username is 6 or more characters long.
+          
+          </span>
+        
+        </li>
+        
+        <li v-bind:class="{'checklist-item--succes':validityState['username'].usernameIsUnique && !validityState['username'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Username is unique.
+          
+          </span>
+        
+        </li>
+
+      </ul> <!-- /checklist username -->
+
+      <ul v-show="inFocus === 'email'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':validityState['email'].valid && !validityState['email'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Enter a valid email address.
+          
+          </span>
+        
+        </li>
+
+      </ul> <!-- /checklist email -->
+
+      <ul v-show="inFocus === 'password'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':validityState['password'].hasNumber && !validityState['password'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Password contains a number.
+          
+          </span>
+        
+        </li>
+        
+        <li v-bind:class="{'checklist-item--succes':validityState['password'].hasCapitalLetter && !validityState['password'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            ... a capital letter.
+          
+          </span>
+        
+        </li>
+        
+        <li v-bind:class="{'checklist-item--succes':validityState['password'].hasSpecialCharacter && !validityState['password'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            ... a special character.
+          
+          </span>
+        
+        </li>
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['password'].tooShort && !validityState['password'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Password is 6 or more characters long.
+          
+          </span>
+        
+        </li>
+        
+      </ul> <!-- /checklist password -->
+
+      <ul v-show="inFocus === 'password-retype'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes': validityState['password-retype'].passwordsMatch && !validityState['password-retype'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Passwords match.
+          
+          </span>
+        
+        </li>
+      </ul>  <!-- /checklist password-retype -->
+
+      <ul v-show="inFocus === 'location'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['location'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Start typing and select a location. (optional)
+
+          </span>
+        
+        </li>
+
+      </ul> <!-- /checklist location -->
+
+      <ul v-show="inFocus === 'company'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['company'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Enter your company name. (optional)
+
+          </span>
+        
+        </li>
+
+      </ul> <!-- /checklist company -->
+
+      <ul v-show="inFocus === 'job-title'" class="checklist">
+        
+        <li v-bind:class="{'checklist-item--succes':!validityState['job-title'].valueMissing}" class="checklist-item">
+
+          <i class="mi mi-check-circle"></i>
+          
+          <span class="checklist-item-text">
+
+            Enter your job title. (optional)
+
+          </span>
+        
+        </li>
+
+      </ul> <!-- /checklist job-title -->
+      
+    </div>
+    <!-- /info -->
+
+  </div>
+
+</script>
+<!-- /create-account-form template -->

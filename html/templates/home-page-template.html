@@ -1,0 +1,76 @@
+<!-- home-page-template -->
+<script type="text/template" id="home-page-template">
+
+  <div class="page">
+    
+    <page>
+      
+      <template slot="left-header">
+
+        <account-section
+            v-bind:active-user="$root.$data['activeUser']"
+            v-bind:is-logged-in.sync="$root.$data['isLoggedIn']">
+
+        </account-section>
+
+      </template>
+      
+      <template slot="left-content">
+      
+        <a href="#" class="new-event-link"
+            v-link="{ path: '/create-event' }">
+      
+          Create an event
+      
+        </a>
+      
+      </template>
+      
+      <template slot="panel-header">
+
+        <div class="panel-header-title">
+          
+          {{ currentEvent['event-name'] }}
+        
+        </div>
+
+        <div class="panel-header-new">
+          
+          New
+
+        </div>
+      
+      </template>
+      
+      <template slot="panel-content">
+      
+        <event-display v-bind:current-event='currentEvent'></event-display>
+
+        <div class="next" v-on:click='next()'>
+
+          <a href="#" class="next-link"
+              v-on:click.prevent
+              v-touch:tap="tapHandler($event)">
+            <i class="mi mi-chevron-right"></i>
+          </a>
+
+        </div>
+
+        <div class="prev" v-on:click='prev()'>
+
+          <a href="#" class="prev-link"
+              v-on:click.prevent
+              v-touch:tap="tapHandler($event)">
+            <i class="mi mi-chevron-left"></i>
+          </a>
+
+        </div>
+      
+      </template>
+    
+    </page>
+
+  </div> <!-- /.page -->
+
+</script>
+<!-- /home-page-template -->

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    
+    <meta charset=utf-8>
+
+    <meta name=viewport content="width=device-width, initial-scale=1">
+
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <title>Meet Up Event Planner</title>
+    
+    <link rel="stylesheet" href="./css/fonts.css">
+
+    <link rel="stylesheet" href="./css/material-icons.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <link rel="stylesheet" href="./css/rome.css"/>
+
+    <!-- build:css combined.css -->
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/mediaqueries.css">
+    <!-- endbuild -->
+
+  </head>
+  
+  <body>
+    
+    <!-- spinner -->
+    <div class="spinner"></div>
+
+    <!-- app -->
+    <div id="app" class="app" tabindex="0"
+
+        v-on:keyup.left="this.$children[0].events ? this.$children[0].prev(): ''"
+        v-on:keyup.right="this.$children[0].events ? this.$children[0].next(): ''"
+        v-touch:swipeleft="this.$children[0].events ? this.$children[0].prev(): ''"
+        v-touch:swiperight="this.$children[0].events ? this.$children[0].next(): ''">
+      
+      <!-- header -->
+      <div class="header">
+      
+        <h1 class="header-title"
+            v-link="{ path:'/' }">
+          
+          Meet Up Event Planner
+
+        </h1>
+      
+      </div>
+      <!-- /header -->
+
+      <router-view  v-ref:active-page transition="fade" transition-mode="out-in"></router-view>
+
+    </div>
+    <!-- /app -->
+
+    @import "account-section-template.html"
+    
+    @import "event-display-template.html"
+
+    @import "create-event-form-template.html"
+ 
+    @import "create-account-form-template.html"
+
+    @import "steps-menu-template.html"
+    
+    @import "multi-step-form-template.html"
+
+    @import "page-template.html"
+    
+    @import "home-page-template.html"
+
+    @import "create-event-page-template.html"
+    
+    @import "create-account-page-template.html"
+
+    <!-- libs -->
+
+    <script src="./js/libs/vue.js"></script>
+    
+    <script src="./js/libs/vue-router.js"></script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places" async="async" defer="defer"></script>
+    
+    <script src="./js/libs/rome.js"></script>
+
+    <script src="./js/libs/hammer.js"></script>
+    
+    <script src="./js/libs/vue-touch.js"></script>
+
+    <!-- helpers, mixins -->
+
+    <!-- build:js combined.js -->
+    <script src="./js/helpers/extend-helper.js"></script>
+
+    <script src="./js/helpers/class-helper.js"></script>
+    
+    <script src="./js/helpers/init-valid-state.js"></script>
+    
+    <script src="./js/mixins/form-mixin.js"></script>
+
+    <!-- components -->
+
+    <script src="./js/components/app-component.js"></script>
+
+    <script src="./js/components/account-section-component.js"></script>
+
+    <script src="./js/components/event-display-component.js"></script>
+
+    <script src="./js/components/steps-menu-component.js"></script>
+
+    <script src="./js/components/create-event-component.js"></script>
+
+    <script src="./js/components/create-account-component.js"></script>
+
+    <script src="./js/components/multi-step-form-component.js"></script>
+
+    <script src="./js/components/page-component.js"></script>
+
+    <script src="./js/components/home-page-component.js"></script>
+
+    <script src="./js/components/create-event-page-component.js"></script>
+
+    <script src="./js/components/create-account-page-component.js"></script>
+
+    <!-- main.js -->
+
+    <script src="./js/main.js"></script>
+    <!-- endbuild -->
+  
+  </body>
+
+</html>
